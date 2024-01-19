@@ -1,1 +1,1 @@
-# ansible_role-template
+# ansible_role-rsyncd

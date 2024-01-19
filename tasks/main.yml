@@ -1,0 +1,72 @@
+---
+
+- name: Install rsync
+  ansible.builtin.package:
+    name: rsync
+    state: present
+
+- name: Create override directory for rsync systemd service
+  ansible.builtin.file:
+    path: "/etc/systemd/system/rsync.service.d"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create override file for rsync systemd service
+  ansible.builtin.template:
+    src: rsyncd-override.service.j2
+    dest: "/etc/systemd/system/rsync.service.d/override.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: (Re)start rsync server service
+
+- name: Create global config file for rsync systemd service
+  ansible.builtin.template:
+    src: rsyncd.conf.j2
+    dest: "/etc/rsyncd.conf"
+    mode: '0644'
+    owner: root
+    group: root
+  notify: (Re)start rsync server service
+
+- name: Create overlay config directory for rsync systemd service
+  ansible.builtin.file:
+    path: "/etc/rsyncd.d"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  notify: (Re)start rsync server service
+
+# - name: Assert on spaces in overlay file names
+#   ansible.builtin.assert:
+#     that: "' ' not in item.key"
+#   loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
+#   no_log: true
+
+- name: Create overlay includes & configs for rsync systemd service
+  when: item.key | regex_search("^(.*).(inc|conf)$")
+  loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
+  ansible.builtin.copy:
+    content: |
+      {{ item.value }}
+    dest: "/etc/rsyncd.d/{{ item.key }}"
+    mode: '0644'
+    owner: root
+    group: root
+  notify: (Re)start rsync server service
+
+- name: Create overlay secrets for rsync systemd service
+  when: item.key | regex_search("^(.*).secret$")
+  loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
+  ansible.builtin.copy:
+    content: |
+      {{ item.value }}
+    dest: "/etc/rsyncd.d/{{ item.key }}"
+    mode: '0600'
+    owner: root
+    group: root
+  no_log: true
+  notify: (Re)start rsync server service

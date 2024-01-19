@@ -1,0 +1,6 @@
+- name: (Re)start rsync server service
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    daemon_reload: true
+    name: "rsync.service"
