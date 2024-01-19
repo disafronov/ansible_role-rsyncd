@@ -1,0 +1,7 @@
+[Unit]
+ConditionPathExists=/etc/rsyncd.d
+
+[Service]
+ExecStart=
+ExecStart=/usr/bin/rsync --daemon --no-detach --address {{ rsyncd_address }} --port 873 --dparam=pidfile=/run/rsyncd.pid
+PIDFile=/run/rsyncd.pid
