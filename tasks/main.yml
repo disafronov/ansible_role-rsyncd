@@ -40,11 +40,11 @@
     group: root
   notify: (Re)start rsync server service
 
-# - name: Assert on spaces in overlay file names
-#   ansible.builtin.assert:
-#     that: "' ' not in item.key"
-#   loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
-#   no_log: true
+- name: Fail on spaces in overlay file names
+  ansible.builtin.assert:
+    that: "' ' not in item.key"
+  loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
+  no_log: true
 
 - name: Create overlay includes & configs for rsync systemd service
   when: item.key | regex_search("^(.*).(inc|conf)$")
@@ -56,6 +56,7 @@
     mode: '0644'
     owner: root
     group: root
+  no_log: true
   notify: (Re)start rsync server service
 
 - name: Create overlay secrets for rsync systemd service
