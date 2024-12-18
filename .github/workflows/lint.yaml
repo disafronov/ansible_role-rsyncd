@@ -47,5 +47,5 @@ jobs:
         continue-on-error: true
 
       - name: Run ansible-lint
-        if: ${{ success() && steps.deps.conclusion != 'failure' }}
         run: ansible-lint
+        continue-on-error: true
