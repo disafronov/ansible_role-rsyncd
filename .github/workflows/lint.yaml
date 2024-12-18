@@ -32,6 +32,10 @@ jobs:
           - python: "3.x"
             ansible: "9"
             experimental: true
+        exclude:
+          - python: "3.x"
+            ansible: "9"
+            experimental: false
 
     steps:
       - name: Check out the codebase
