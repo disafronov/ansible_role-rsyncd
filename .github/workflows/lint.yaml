@@ -25,8 +25,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        ansible: ["9", "latest"]
         python: ["3.10", "3.x"]
+        ansible: ["9", "latest"]
         experimental: [false]
         include:
           - python: "3.x"
