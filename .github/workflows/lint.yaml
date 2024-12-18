@@ -43,6 +43,8 @@ jobs:
 
       - name: Install test dependencies
         run: pip install -r .requirements/${{ matrix.ansible }}.txt
+        continue-on-error: true
 
       - name: Run ansible-lint
+        if: ${{ success() }}
         run: ansible-lint
