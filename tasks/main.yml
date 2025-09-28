@@ -47,7 +47,7 @@
   no_log: true
 
 - name: Create overlay includes & configs for rsync systemd service
-  when: item.key | regex_search("^(.*).(inc|conf)$")
+  when: item.key | regex_search("^(.*).(inc|conf)$") is not none
   loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
   ansible.builtin.copy:
     content: |
@@ -60,7 +60,7 @@
   notify: (Re)start rsync server service
 
 - name: Create overlay secrets for rsync systemd service
-  when: item.key | regex_search("^(.*).secret$")
+  when: item.key | regex_search("^(.*).secret$") is not none
   loop: "{{ lookup('ansible.builtin.dict', rsyncd_configs) }}"
   ansible.builtin.copy:
     content: |
